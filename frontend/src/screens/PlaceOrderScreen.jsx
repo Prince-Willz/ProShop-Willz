@@ -39,7 +39,8 @@ const PlaceOrderScreen = () => {
       dispatch(clearCartItems());
       navigate(`/order/${res._id}`);
     } catch (err) {
-      toast.error(err);
+      // Show a useful error message from the API, not [object Object]
+      toast.error(err?.data?.message || err.error || "Failed to place order");
     }
   };
 

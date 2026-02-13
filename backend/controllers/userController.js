@@ -6,21 +6,23 @@ import generateToken from "../utils/generateToken.js";
 // @desc  Auth user & get token
 // @route POST /api/users/login
 // @access Public
-const authUser = asyncHandler(async (req, res) => { 
+const authUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
-        generateToken(res, user._id);
+        // Set httpOnly cookie and also get the raw token
+        const token = generateToken(res, user._id);
 
         res.status(200).json({
             _id: user._id,
             name: user.name,
             email: user.email,
             isAdmin: user.isAdmin,
+            token, // send token so frontend can use Authorization header
         });
-    } else { 
+    } else {
         res.status(401);
         throw new Error("Invalid email or password");
     }
@@ -29,7 +31,7 @@ const authUser = asyncHandler(async (req, res) => {
 // @desc  Register user
 // @route POST /api/users/login
 // @access Public
-const registerUser  = asyncHandler(async (req, res) => { 
+const registerUser = asyncHandler(async (req, res) => {
     const { name, email, password } = req.body;
 
     const userExists = await User.findOne({ email });
@@ -46,13 +48,15 @@ const registerUser  = asyncHandler(async (req, res) => {
     });
 
     if (user) {
-        generateToken(res, user._id);
-         
+        // Set httpOnly cookie and also get the raw token
+        const token = generateToken(res, user._id);
+
         res.status(201).json({
             _id: user._id,
             name: user.name,
             email: user.email,
             isAdmin: user.isAdmin,
+            token, // send token so frontend can use Authorization header
         });
     } else {
         res.status(400);
@@ -63,7 +67,7 @@ const registerUser  = asyncHandler(async (req, res) => {
 // @desc  Logout user / clear cookie
 // @route POST /api/users/logout
 // @access Ptivate
-const logoutUser = asyncHandler(async (req, res) => { 
+const logoutUser = asyncHandler(async (req, res) => {
     res.cookie("jwt", "", {
         httpOnly: true,
         expires: new Date(0)
@@ -75,7 +79,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 // @desc  Get user profile
 // @route GET /api/users/profile
 // @access Private
-const getUserProfile = asyncHandler(async (req, res) => { 
+const getUserProfile = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id);
 
     if (user) {
@@ -94,7 +98,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
 // @desc  Update user profile
 // @route PUT /api/users/profile
 // @access Pivate
-const updateUserProfile = asyncHandler(async (req, res) => { 
+const updateUserProfile = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id);
 
     if (user) {
@@ -122,21 +126,21 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 // @desc  Get users
 // @route GET /api/users
 // @access Private/Admin
-const getUsers = asyncHandler(async (req, res) => { 
+const getUsers = asyncHandler(async (req, res) => {
     res.send("get user");
 });
 
 // @desc  Get user by ID
 // @route GET /api/users/:id
 // @access Private/Admin
-const getUserByID = asyncHandler(async (req, res) => { 
+const getUserByID = asyncHandler(async (req, res) => {
     res.send("get user by id");
 });
 
 // @desc  Delete users
 // @route DELETE /api/users/:id
 // @access Private/Admin
-const deleteUser = asyncHandler(async (req, res) => { 
+const deleteUser = asyncHandler(async (req, res) => {
     res.send("delete user");
 });
 
@@ -145,7 +149,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 // @desc  Update user
 // @route PUT /api/users/:id
 // @access Private/Admin
-const updateUser = asyncHandler(async (req, res) => { 
+const updateUser = asyncHandler(async (req, res) => {
     res.send("update user");
 });
 
