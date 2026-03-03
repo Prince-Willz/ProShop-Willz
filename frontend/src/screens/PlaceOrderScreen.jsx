@@ -8,11 +8,20 @@ import CheckoutSteps from '../components/CheckoutSteps';
 import Loader from '../components/Loader';
 import { useCreateOrderMutation } from '../slices/ordersApiSlice';
 import { clearCartItems } from '../slices/cartSlice';
+import { BASE_URL } from '../constants';
 
 const PlaceOrderScreen = () => {
   const navigate = useNavigate();
 
   const cart = useSelector((state) => state.cart);
+
+  const getImageUrl = (path) => {
+    if (!path) return '';
+    if (path.startsWith('/uploads')) {
+      return `${BASE_URL}${path}`;
+    }
+    return path;
+  };
 
   const [createOrder, { isLoading, error }] = useCreateOrderMutation();
 
@@ -77,7 +86,7 @@ const PlaceOrderScreen = () => {
                       <Row>
                         <Col md={1}>
                           <Image
-                            src={item.image}
+                            src={getImageUrl(item.image)}
                             alt={item.name}
                             fluid
                             rounded
