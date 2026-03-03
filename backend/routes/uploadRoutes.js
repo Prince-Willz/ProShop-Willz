@@ -1,4 +1,5 @@
 import path from "path";
+import fs from "fs";
 import express from "express";
 import multer from "multer";
 const router = express.Router();
@@ -37,6 +38,6 @@ router.post("/", upload.single("image"), (req, res) => {
         message: "Image Uploaded",
         image: `/${req.file.path}`
     });
- })
+})
 
 export default router;
