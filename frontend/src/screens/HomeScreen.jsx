@@ -5,6 +5,7 @@ import Product from "../components/Product";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import Paginate from "../components/Paginate";
+import ProductCarousel from '../components/ProductCarousel';
 import { useGetProductsQuery } from "../slices/productsApiSlice";
 
 const HomeScreen = () => {
@@ -19,6 +20,7 @@ const HomeScreen = () => {
             <Loader />
         ) : error ? (<Message variant="danger">{ error?.data?.message || error.error }</Message>) : (
             <>
+                <ProductCarousel />
                 <h1>Latest Products</h1>
                 <Row>
                     {data?.products?.map((product) => (

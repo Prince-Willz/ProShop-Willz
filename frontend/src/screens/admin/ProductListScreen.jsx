@@ -1,7 +1,7 @@
 import { LinkContainer } from 'react-router-bootstrap';
 import { Table, Button, Row, Col } from 'react-bootstrap';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
 import Paginate from '../../components/Paginate';
@@ -10,6 +10,7 @@ import { useGetProductsQuery, useCreateProductMutation, useDeleteProductMutation
 
 const ProductListScreen = () => {
     const { pageNumber } = useParams();
+    const navigate = useNavigate();
 
     const { data, isLoading, error, refetch } = useGetProductsQuery({pageNumber});
 
@@ -22,7 +23,6 @@ const ProductListScreen = () => {
             try {
                 await deleteProduct(id);
                 toast.success("Product deleted");
-                refetch();
             } catch (err) {
                 toast.error(err?.data?.message || err.error);
             }
@@ -32,7 +32,9 @@ const ProductListScreen = () => {
     const createProductHandler = async () => {
         if (window.confirm("Are you sure you want to create a new product?")) {
             try {
-                await createProduct();
+                const res = await createProduct().unwrap();
+                toast.success("Product created");
+                navigate(`/admin/product/${res._id}/edit`); 
                 refetch();
             } catch (err) {
                 toast.error(err?.data?.message || err.error);

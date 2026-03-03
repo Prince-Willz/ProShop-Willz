@@ -45,7 +45,7 @@ const ProductEditScreen = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     const updatedProduct = {
-      productId,
+      _id: productId,
       name,
       price,
       image,
@@ -65,16 +65,17 @@ const ProductEditScreen = () => {
   };
 
   const uploadFileHandler = async (e) => {
-    const formData = new FormData();
-    formData.append("image", e.target.files[0]);
-    try {
-      const res = await uploadProductImage(formData).unwrap();
-      toast.success(res.message);
-      setImage(res.image);
-    } catch (err) {
-      toast.error(err?.data?.message || err.error);
-    }
-  };
+  const formData = new FormData();
+  formData.append("image", e.target.files[0]);
+
+  try {
+    const res = await uploadProductImage(formData).unwrap();
+    setImage(res); // ✅ res === "/uploads/filename.jpg"
+    toast.success("Image uploaded");
+  } catch (err) {
+    toast.error(err?.data?.message || err.error);
+  }
+};
 
   return (
     <>
