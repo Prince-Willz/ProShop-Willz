@@ -45,7 +45,7 @@ const ProductEditScreen = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     const updatedProduct = {
-      _id: productId,
+      productId,
       name,
       price,
       image,
@@ -65,17 +65,18 @@ const ProductEditScreen = () => {
   };
 
   const uploadFileHandler = async (e) => {
-  const formData = new FormData();
-  formData.append("image", e.target.files[0]);
+    const formData = new FormData();
+    formData.append("image", e.target.files[0]);
 
-  try {
-    const res = await uploadProductImage(formData).unwrap();
-    setImage(res); // ✅ res === "/uploads/filename.jpg"
-    toast.success("Image uploaded");
-  } catch (err) {
-    toast.error(err?.data?.message || err.error);
-  }
-};
+    try {
+      const res = await uploadProductImage(formData).unwrap();
+      // res is { message, image: "/uploads/..." }
+      setImage(res.image);
+      toast.success(res.message || "Image uploaded");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
 
   return (
     <>
@@ -89,9 +90,9 @@ const ProductEditScreen = () => {
         {isLoading ? (
           <Loader />
         ) : error ? (
-        <Message variant="danger">{error}</Message>
-      ) : (
-          <Form onSubmit={ submitHandler }>
+          <Message variant="danger">{error}</Message>
+        ) : (
+          <Form onSubmit={submitHandler}>
             <Form.Group controlId="name" className="my-2">
               <Form.Label>Name</Form.Label>
               <Form.Control
@@ -176,7 +177,7 @@ const ProductEditScreen = () => {
               Update
             </Button>
           </Form>
-        )} 
+        )}
       </FormContainer>
     </>
   );
